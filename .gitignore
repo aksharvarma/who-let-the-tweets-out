@@ -118,4 +118,8 @@ dmypy.json
 # Miscellaneous
 ################################################################################
 
-data/raw/*.tar.gz
+# Ignore all (raw/processed) data
+data
+
+# Emacs backup file.
+*~
