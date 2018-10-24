@@ -5,6 +5,14 @@ This project explores author attribution problem with small texts (tweets).
 
 ## Administration
 
+### Install dependencies
+
+Execute the following command:
+
+```shell
+$ make install-dependencies
+```
+
 ### Download raw data
 
 Execute the following command:
@@ -24,8 +32,9 @@ $ make preprocess-raw-data
 ## Tasks
 
 ### Logistics
-- [ ] Setup Python virtualenv
-- [ ] Create dependency list (include SIF)
+- [ ] *Setup Python virtualenv*
+- [X] Create dependency list
+- [ ] Understand SIF and add its [implementation](https://github.com/PrincetonML/SIF "SIF").
  
 ### Data
 - [X] Automate download and extraction of raw data

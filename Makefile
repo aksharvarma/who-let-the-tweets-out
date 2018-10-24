@@ -1,5 +1,9 @@
-PYTHON_BINPATH := ~/projects/anaconda3/bin/python
-PIP_BINPATH :=
+PYTHON_BINPATH := python3
+PIP_BINPATH := pip3
+
+install-dependencies:
+	$(PIP_BINPATH) install numpy
+	$(PIP_BINPATH) install pandas
 
 # Download and untar raw data
 download-raw-data:
@@ -18,8 +22,5 @@ preprocess-raw-data:
 
 train-model:
 	@echo "Train Model"
-
-install-dependencies:
-	@echo "pip install commands"
 
 .PHONY: download-raw-data preprocess-raw-data train-model install-dependencies
