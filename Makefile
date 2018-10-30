@@ -2,8 +2,8 @@ PYTHON_BINPATH := python3
 PIP_BINPATH := pip3
 
 install-dependencies:
-	$(PIP_BINPATH) install numpy
-	$(PIP_BINPATH) install pandas
+	$(PIP_BINPATH) install --user numpy
+	$(PIP_BINPATH) install --user pandas
 
 # Download and untar raw data
 download-raw-data:
@@ -15,11 +15,11 @@ download-raw-data:
 # Split into validation set
 preprocess-raw-data:
 	@mkdir -p data/preprocessed
-	@time $(PYTHON_BINPATH) src/preprocess.py \
-                          data/raw/tweets.json \
-                          data/raw/users.json  \
-                          data/preprocessed/tweets.gzip \
-                          data/preprocessed/users.gzip
+	@$(PYTHON_BINPATH) src/preprocess.py \
+                     data/raw/tweets.json \
+                     data/raw/users.json  \
+                     data/preprocessed/tweets.pkl \
+                     data/preprocessed/users.pkl
 
 train-model:
 	@echo "Train Model"
