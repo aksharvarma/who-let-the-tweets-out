@@ -15,10 +15,11 @@ download-raw-data:
 # Split into validation set
 preprocess-raw-data:
 	@mkdir -p data/preprocessed
-	@$(PYTHON_BINPATH) src/preprocess.py data/raw/tweets.json \
-                                       data/raw/users.json  \
-                                       data/preprocessed/tweets.pkl \
-                                       data/preprocessed/users.pkl
+	@time $(PYTHON_BINPATH) src/preprocess.py \
+                          data/raw/tweets.json \
+                          data/raw/users.json  \
+                          data/preprocessed/tweets.gzip \
+                          data/preprocessed/users.gzip
 
 train-model:
 	@echo "Train Model"
