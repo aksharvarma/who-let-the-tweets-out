@@ -1,27 +1,50 @@
-PYTHON_BINPATH := python3
-PIP_BINPATH := pip3
+################################################################################
+# EXECUTABLES & DEPENDENCIES
+################################################################################
+
+PYTHON_BINPATH := python
+PIP_BINPATH := pip
+PYTHON_DEPENDENCIES := numpy pandas
+
+################################################################################
+# DIRECTORY & FILE PATHS
+################################################################################
+
+DATA_DIRPATH := data
+
+RAW_DATA_DIRPATH := $(DATA_DIRPATH)/raw
+RAW_DATA_URL := https://files.pushshift.io/twitter/US_PoliticalTweets.tar.gz
+RAW_DATA_FILEPATH := $(RAW_DATA_DIRPATH)/us-political-tweets.tar.gz
+RAW_TWEETS_FILEPATH := $(RAW_DATA_DIRPATH)/tweets.json
+RAW_USERS_FILEPATH := $(RAW_DATA_DIRPATH)/users.json
+
+PREPROCESSED_DATA_DIRPATH := $(DATA_DIRPATH)/preprocessed
+PREPROCESSED_TWEETS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/tweets.pkl
+PREPROCESSED_USERS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/users.pkl
+
+################################################################################
+# RULES
+################################################################################
 
 install-dependencies:
-	$(PIP_BINPATH) install --user numpy
-	$(PIP_BINPATH) install --user pandas
+	$(PIP_BINPATH) install --user $(PYTHON_DEPENDENCIES)
 
 # Download and untar raw data
 download-raw-data:
-	@mkdir -p data/raw
-	@wget -O data/raw/us-political-tweets.tar.gz \
-           https://files.pushshift.io/twitter/US_PoliticalTweets.tar.gz
-	@tar -xvf data/raw/us-political-tweets.tar.gz --directory data/raw
+	@mkdir -p $(RAW_DATA_DIRPATH)
+	@wget -O $(RAW_DATA_FILEPATH) $(RAW_DATA_URL)
+	@tar -xvf $(RAW_DATA_FILEPATH) --directory $(RAW_DATA_DIRPATH)
 
-# Split into validation set
+# Format and remove irrelevant information
 preprocess-raw-data:
-	@mkdir -p data/preprocessed
+	@mkdir -p $(PREPROCESSED_DATA_DIRPATH)
 	@$(PYTHON_BINPATH) src/preprocess.py \
-                     data/raw/tweets.json \
-                     data/raw/users.json  \
-                     data/preprocessed/tweets.pkl \
-                     data/preprocessed/users.pkl
+                     $(RAW_TWEETS_FILEPATH) \
+                     $(RAW_USERS_FILEPATH) \
+                     $(PREPROCESSED_TWEETS_FILEPATH) \
+                     $(PREPROCESSED_USERS_FILEPATH)
 
 train-model:
 	@echo "Train Model"
 
-.PHONY: download-raw-data preprocess-raw-data train-model install-dependencies
+.PHONY: install-dependencies download-raw-data preprocess-raw-data train-model
