@@ -22,6 +22,8 @@ PREPROCESSED_DATA_DIRPATH := $(DATA_DIRPATH)/preprocessed
 PREPROCESSED_TWEETS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/tweets.pkl
 PREPROCESSED_USERS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/users.pkl
 
+MODEL_DIRPATH := models
+
 MIN_TWEET_COUNT := 500
 ################################################################################
 # RULES
@@ -50,11 +52,12 @@ split-data:
 	@echo "Split-data will call src/split.py to create train-test and validation data"
 
 train-baseline-model:
+	@mkdir -p $(MODEL_DIRPATH)
 	@$(PYTHON_BINPATH) src/baseline_models.py \
                            $(PREPROCESSED_TWEETS_FILEPATH) \
                            $(MODEL_CHOICE) \
-                           models/$(MODEL_CHOICE).model \
-                           models/$(MODEL_CHOICE).scores
+                           $(MODEL_DIRPATH)/$(MODEL_CHOICE).model \
+                           $(MODEL_DIRPATH)/$(MODEL_CHOICE).scores
 
 train-model:
 	@echo "Train Model. Not implemented yet."
