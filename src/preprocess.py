@@ -2,6 +2,7 @@ import argparse
 import json
 import pandas as pd
 import numpy as np
+from collections import Counter
 from datetime import datetime
 
 
@@ -25,6 +26,10 @@ def get_arguments():
                         metavar = 'processed-user-filepath',
                         type = str,
                         help = "pickle file containing processed user information")
+    parser.add_argument('min_tweet_count',
+                        metavar = 'min-tweet-count',
+                        type = int,
+                        help = "minimum number of tweets a user needs to be kept in the data")
     return parser.parse_args()
 
 
@@ -34,13 +39,35 @@ def raw_json_reader(filepath, transformer):
             yield transformer(json.loads(line))
 
 
-def json_to_pickle(input_filepath, output_filepath, transformer):
+def json_to_pickle(input_filepath, output_filepath, transformer,
+                   prune_empty=False, min_tweet_count=None):
     reader = raw_json_reader(input_filepath, transformer)
     data = pd.DataFrame(list(reader))
+    if prune_empty:
+        data = prune_empty_tweets(data)
+    if min_tweet_count is not None:
+        data = prune_inactive_users(data, min_tweet_count=min_tweet_count)
     data.to_pickle(output_filepath)
+    print('Written to:', output_filepath)
 
 
-def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath):
+def prune_empty_tweets(tweets):
+    print('Empty tweets dropped:', sum(1 for tweet in tweets.text_body
+                                       if len(tweet)==0))
+    return tweets[tweets.text_body.map(len)!=0]
+
+def prune_inactive_users(tweets, min_tweet_count=500):
+    cntr = Counter(tweets.user_id)
+    drop_user_count = sum(1 for i in cntr if cntr[i]<min_tweet_count)
+    drop_tweet_count = sum(cntr[i] for i in cntr if cntr[i]<min_tweet_count)
+    print('Pruning inactive users;',
+          drop_user_count, 'users dropped;',
+          drop_tweet_count, 'tweets dropped;')
+    return tweets[tweets['user_id'].map(lambda i: cntr[i]>=min_tweet_count)]
+
+
+def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath, min_tweet_count=None):
+    print("Preprocessing tweets...")
     user_collection = []
     media_collection = []
     def transformer(record):
@@ -103,10 +130,14 @@ def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath):
 
     json_to_pickle(raw_tweet_filepath,
                    processed_tweet_filepath,
-                   transformer)
+                   transformer,
+                   prune_empty=True,
+                   min_tweet_count=min_tweet_count)
 
 
 def process_user_data(raw_user_filepath, processed_user_filepath):
+    print("Preprocessing users...")
+
     def transformer(record):
         created_at = record["created_at"]
 
@@ -138,11 +169,10 @@ def process_user_data(raw_user_filepath, processed_user_filepath):
 def main():
     args = get_arguments()
 
-    print("Preprocessing tweets ...")
     process_tweet_data(args.raw_tweet_filepath,
-                       args.processed_tweet_filepath)
+                       args.processed_tweet_filepath,
+                       min_tweet_count=args.min_tweet_count)
 
-    print("Preprocessing users ...")
     process_user_data(args.raw_user_filepath,
                       args.processed_user_filepath)
 

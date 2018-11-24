@@ -22,6 +22,7 @@ PREPROCESSED_DATA_DIRPATH := $(DATA_DIRPATH)/preprocessed
 PREPROCESSED_TWEETS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/tweets.pkl
 PREPROCESSED_USERS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/users.pkl
 
+MIN_TWEET_COUNT := 500
 ################################################################################
 # RULES
 ################################################################################
@@ -39,10 +40,12 @@ download-raw-data:
 preprocess-raw-data:
 	@mkdir -p $(PREPROCESSED_DATA_DIRPATH)
 	@$(PYTHON_BINPATH) src/preprocess.py \
-                     $(RAW_TWEETS_FILEPATH) \
-                     $(RAW_USERS_FILEPATH) \
-                     $(PREPROCESSED_TWEETS_FILEPATH) \
-                     $(PREPROCESSED_USERS_FILEPATH)
+                           $(RAW_TWEETS_FILEPATH) \
+                           $(RAW_USERS_FILEPATH) \
+                           $(PREPROCESSED_TWEETS_FILEPATH) \
+                           $(PREPROCESSED_USERS_FILEPATH) \
+                           $(MIN_TWEET_COUNT)
+
 
 train-model:
 	@echo "Train Model"
