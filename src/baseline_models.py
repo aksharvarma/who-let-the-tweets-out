@@ -28,6 +28,9 @@ class BaseLineModel():
 
     def train(self, X, y):
         self.model.fit(X, y)
+        return self.predict(X)
+
+    def predict(self, X):
         return self.model.predict(X)
 
     def test(self, X):
@@ -53,15 +56,15 @@ class BaseLineModel():
 
             y_pred_train = self.train(X_train, y_train)
             y_pred_test = self.test(X_test)
-            scores.append(self.eval_preds(y_test, y_pred))
+            scores.append(self.eval_preds(y_test, y_pred_test))
 
         scores = np.array(scores)
         print(np.mean(scores, axis=0), np.std(scores, axis=0))
         return scores
 
     def save_model(self, filename):
-            print('Saving model:', filename, end='. ', flush=true)
-            joblib.dump(model, filename)
+            print('Saving model:', filename, end='. ', flush=True)
+            joblib.dump(self.model, filename)
             print('Done.')
 
 def get_arguments():
