@@ -39,7 +39,7 @@ $ make preprocess-raw-data
 ### Data
 - [X] Automate download and extraction of raw data
 - [X] Preprocess raw data as Pandas dataframe
-- [ ] Create testing and validation sets
+- [X] Create testing and validation sets
 
 ### Modeling
 - [ ] Feature engineering (feature distribution)

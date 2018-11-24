@@ -4,7 +4,7 @@
 
 PYTHON_BINPATH := python
 PIP_BINPATH := pip
-PYTHON_DEPENDENCIES := numpy pandas
+PYTHON_DEPENDENCIES := numpy pandas nltk
 
 ################################################################################
 # DIRECTORY & FILE PATHS
@@ -46,8 +46,17 @@ preprocess-raw-data:
                            $(PREPROCESSED_USERS_FILEPATH) \
                            $(MIN_TWEET_COUNT)
 
+split-data:
+	@echo "Split-data will call src/split.py to create train-test and validation data"
+
+train-baseline-model:
+	@$(PYTHON_BINPATH) src/baseline_models.py \
+                           $(PREPROCESSED_TWEETS_FILEPATH) \
+                           $(MODEL_CHOICE) \
+                           models/$(MODEL_CHOICE).model \
+                           models/$(MODEL_CHOICE).scores
 
 train-model:
-	@echo "Train Model"
+	@echo "Train Model. Not implemented yet."
 
 .PHONY: install-dependencies download-raw-data preprocess-raw-data train-model
