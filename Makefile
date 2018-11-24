@@ -4,7 +4,7 @@
 
 PYTHON_BINPATH := python
 PIP_BINPATH := pip
-PYTHON_DEPENDENCIES := numpy pandas nltk
+PYTHON_DEPENDENCIES := numpy pandas nltk sklearn matplotlib
 
 ################################################################################
 # DIRECTORY & FILE PATHS
