@@ -2,8 +2,8 @@
 # EXECUTABLES & DEPENDENCIES
 ################################################################################
 
-PYTHON_BINPATH := python
-PIP_BINPATH := pip
+PYTHON_BINPATH := python3
+PIP_BINPATH := pip3
 PYTHON_DEPENDENCIES := numpy pandas nltk sklearn matplotlib progressbar2
 
 ################################################################################
