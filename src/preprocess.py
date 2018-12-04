@@ -2,9 +2,12 @@ import argparse
 import json
 import pandas as pd
 import numpy as np
+import progressbar
 from collections import Counter
 from datetime import datetime
-
+import os
+import embed
+import pickle
 
 def get_arguments():
     parser = argparse.ArgumentParser(description = ("Preprocess raw json " +
@@ -26,6 +29,14 @@ def get_arguments():
                         metavar = 'processed-user-filepath',
                         type = str,
                         help = "pickle file containing processed user information")
+    parser.add_argument('processed_words_filepath',
+                        metavar = 'processed-words-filepath',
+                        type = str,
+                        help = "pickle file containing processed words information")
+    parser.add_argument('processed_vectors_filepath',
+                        metavar = 'processed-vectors-filepath',
+                        type = str,
+                        help = "numpy file containing processed word vectors")
     parser.add_argument('min_tweet_count',
                         metavar = 'min-tweet-count',
                         type = int,
@@ -34,15 +45,22 @@ def get_arguments():
 
 
 def raw_json_reader(filepath, transformer):
+    filesize = os.path.getsize(filepath)
+    bar = progressbar.ProgressBar(max_value = filesize)
+    processed_bytes = 0
+    data = []
     with open(filepath, 'r') as f:
         for line in f:
-            yield transformer(json.loads(line))
+            data.append(transformer(json.loads(line)))
+            processed_bytes += len(line)
+            bar.update(processed_bytes)
+    bar.finish()
+    return data
 
 
 def json_to_pickle(input_filepath, output_filepath, transformer,
                    prune_empty=False, min_tweet_count=None):
-    reader = raw_json_reader(input_filepath, transformer)
-    data = pd.DataFrame(list(reader))
+    data = pd.DataFrame(raw_json_reader(input_filepath, transformer))
     if prune_empty:
         data = prune_empty_tweets(data)
     if min_tweet_count is not None:
@@ -52,7 +70,7 @@ def json_to_pickle(input_filepath, output_filepath, transformer,
 
 
 def prune_empty_tweets(tweets):
-    print('Empty tweets dropped:', sum(1 for tweet in tweets.text_body
+    print('\nEmpty tweets dropped:', sum(1 for tweet in tweets.text_body
                                        if len(tweet)==0))
     return tweets[tweets.text_body.map(len)!=0]
 
@@ -66,10 +84,23 @@ def prune_inactive_users(tweets, min_tweet_count=500):
     return tweets[tweets['user_id'].map(lambda i: cntr[i]>=min_tweet_count)]
 
 
-def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath, min_tweet_count=None):
+def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath,
+                       preprocessed_words_filepath, preprocessed_vectors_filepath,
+                       min_tweet_count=None):
     print("Preprocessing tweets...")
+
+    preprocessed_words_file = open(preprocessed_words_filepath, "rb")
+    words = pickle.load(preprocessed_words_file)
+    preprocessed_words_file.close()
+
+    preprocessed_vectors_file = open(preprocessed_vectors_filepath, "rb")
+    vectors = np.load(preprocessed_vectors_file)
+    preprocessed_vectors_file.close()
+
+    embedder = embed.SifEmbedder(words, vectors)
     user_collection = []
     media_collection = []
+
     def transformer(record):
         tweet_column_names = ["in_reply_to_screen_name",
                               "screen_name"]
@@ -114,6 +145,7 @@ def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath, min_tweet_c
             # "text_prologue": text[0:relevant_text_range[0]],
             # "text_epilogue": text[relevant_text_range[1]:],
             "text_body": text[relevant_text_range[0]: relevant_text_range[1]],
+            "embedding": embedder.embed(text[relevant_text_range[0]: relevant_text_range[1]]),
             # "user_mentions": np.array(list({d['id'] for d in user_mentions}),
             #                           dtype = np.int64),
             # "media": len(list({d['id'] for d in media})),
@@ -171,6 +203,8 @@ def main():
 
     process_tweet_data(args.raw_tweet_filepath,
                        args.processed_tweet_filepath,
+                       args.processed_words_filepath,
+                       args.processed_vectors_filepath,
                        min_tweet_count=args.min_tweet_count)
 
     process_user_data(args.raw_user_filepath,

@@ -4,7 +4,7 @@
 
 PYTHON_BINPATH := python
 PIP_BINPATH := pip
-PYTHON_DEPENDENCIES := numpy pandas nltk sklearn matplotlib
+PYTHON_DEPENDENCIES := numpy pandas nltk sklearn matplotlib progressbar2
 
 ################################################################################
 # DIRECTORY & FILE PATHS
@@ -21,6 +21,13 @@ RAW_USERS_FILEPATH := $(RAW_DATA_DIRPATH)/users.json
 PREPROCESSED_DATA_DIRPATH := $(DATA_DIRPATH)/preprocessed
 PREPROCESSED_TWEETS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/tweets.pkl
 PREPROCESSED_USERS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/users.pkl
+
+WORD_VECTOR_DATA_URL := http://nlp.stanford.edu/data/glove.840B.300d.zip
+RAW_WORD_VECTOR_ARCHIVEPATH = $(RAW_DATA_DIRPATH)/word-vector.zip
+RAW_WORD_VECTOR_FILEPATH := $(RAW_DATA_DIRPATH)/word-vector.txt
+PREPROCESSED_WORDS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/words.pkl
+PREPROCESSED_VECTORS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/vectors.npz
+
 
 MODEL_DIRPATH := models
 
@@ -46,10 +53,24 @@ preprocess-raw-data:
                            $(RAW_USERS_FILEPATH) \
                            $(PREPROCESSED_TWEETS_FILEPATH) \
                            $(PREPROCESSED_USERS_FILEPATH) \
+                           $(PREPROCESSED_WORDS_FILEPATH) \
+                           $(PREPROCESSED_VECTORS_FILEPATH) \
                            $(MIN_TWEET_COUNT)
 
-split-data:
-	@echo "Split-data will call src/split.py to create train-test and validation data"
+# Download and unzip word vector data
+download-word-vector-data:
+	@mkdir -p $(RAW_DATA_DIRPATH)
+	@wget -O $(RAW_WORD_VECTOR_ARCHIVEPATH) $(WORD_VECTOR_DATA_URL)
+	@unzip -o $(RAW_WORD_VECTOR_ARCHIVEPATH) -d $(RAW_DATA_DIRPATH)
+	@mv $(RAW_DATA_DIRPATH)/$(shell unzip -Z1 $(RAW_WORD_VECTOR_ARCHIVEPATH)) $(RAW_WORD_VECTOR_FILEPATH)
+
+# Format word vector data
+preprocess-word-vector-data:
+	@mkdir -p $(PREPROCESSED_DATA_DIRPATH)
+	@$(PYTHON_BINPATH) src/preprocess-word-vector.py \
+                           $(RAW_WORD_VECTOR_FILEPATH) \
+                           $(PREPROCESSED_WORDS_FILEPATH) \
+                           $(PREPROCESSED_VECTORS_FILEPATH)
 
 train-baseline-model:
 	@mkdir -p $(MODEL_DIRPATH)
