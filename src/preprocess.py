@@ -127,6 +127,8 @@ def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath,
 
         earliest_year = 2008
 
+        text_body = text[relevant_text_range[0]: relevant_text_range[1]]
+
         return {
             "id": record["id"],
             # "is_quote_status": record["is_quote_status"],
@@ -144,8 +146,12 @@ def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath,
             "in_reply_to_user_id": record["in_reply_to_user_id"],
             # "text_prologue": text[0:relevant_text_range[0]],
             # "text_epilogue": text[relevant_text_range[1]:],
-            "text_body": text[relevant_text_range[0]: relevant_text_range[1]],
-            "embedding": embedder.embed(text[relevant_text_range[0]: relevant_text_range[1]]),
+            "text_body": text_body,
+            "avg_chars_per_word": avg_chars_per_word(text_body),
+            "avg_words_per_sentence": avg_words_per_sentence(text_body),
+            "num_of_chars": num_of_chars(text_body),
+            "num_of_punctutations": num_of_punctutations(text_body),
+            "embedding": embedder.embed(text_body),
             # "user_mentions": np.array(list({d['id'] for d in user_mentions}),
             #                           dtype = np.int64),
             # "media": len(list({d['id'] for d in media})),
