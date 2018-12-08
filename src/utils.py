@@ -27,7 +27,10 @@ def avg_words_per_sentence(text):
 
 def avg_chars_per_word(text):
     words = text.split()
-    return sum(len(word) for word in words)/len(words)
+    count = len(words)
+    if count == 0:
+        return 0
+    return sum(len(word) for word in words)/count
 
 
 def num_of_punctutations(text):
@@ -47,13 +50,7 @@ def num_of_words(text):
     return len([w for w in text.split() if w != ''])
 
 
-def extract_features(tweets, keep_orig=False):
-    embedding = pd.DataFrame(tweets["embedding"].values.tolist())
-
-    if keep_orig:
-        cols_to_keep = tweets.columns
-    else:
-        cols_to_keep = ['avg_chars_per_word', 'avg_words_per_sentence',
-                        'num_of_chars', 'num_of_punctutations', 'user_id']
-
-    return pd.concat([tweets[cols_to_keep], embedding])
+def extract_features(tweets, eliminate = []):
+    columns = list(set(tweets.columns) - set(eliminate))
+    columns.sort()
+    return tweets[columns]

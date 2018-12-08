@@ -4,7 +4,7 @@ import re
 
 
 class SifEmbedder(object):
-    def __init__(self, words, vectors,  weight = 0.00001):
+    def __init__(self, words, vectors,  weight = 0.0001):
         self._words = words
         self._vectors = vectors
         self._weight = weight
@@ -13,7 +13,7 @@ class SifEmbedder(object):
         words = self._tokenize(text)
         word_indices = self._index(words)
         if len(word_indices) == 0:
-            return numpy.zeros((1, self._vectors[1,:]))
+            return numpy.zeros(self._vectors.shape[1])
         embedding = self._vectors[word_indices, :].sum(axis = 0)
         embedding = self._weight * embedding / len(word_indices)
         return embedding

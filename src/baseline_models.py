@@ -13,12 +13,14 @@ class BaseLineModel():
         if tweets_filename is None:
             raise ValueError("No filename provided")
         self.tweets = U.read_data_from_file(tweets_filename)
-        self.tweets = U.extract_features(self.tweets)
-
-        self.model_options = {'RF': RandomForestClassifier,
-                              'GB': GradientBoostingClassifier,
-                              'Bag': BaggingClassifier,
-                              'Ada': AdaBoostClassifier}
+        self.tweets = U.extract_features(self.tweets,
+                                         ["in_reply_to_user_id",
+                                          "text_body",
+                                          "id"])
+        self.model_options = {'RF': lambda : RandomForestClassifier(n_jobs = -1),
+                              'GB': lambda : GradientBoostingClassifier(n_jobs = -1),
+                              'Bag': lambda : BaggingClassifier(n_jobs = -1),
+                              'Ada': lambda : AdaBoostClassifier(n_jobs = -1)}
 
         self.chosen_model = self.model_options[chosen_model]
         self.setup_model()

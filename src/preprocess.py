@@ -6,10 +6,9 @@ import progressbar
 from collections import Counter
 from datetime import datetime
 import os
-import embed
 import pickle
 
-def get_arguments():
+def parse_arguments():
     parser = argparse.ArgumentParser(description = ("Preprocess raw json " +
                                                     "files and store them as "
                                                     "Pandas pickle files"))
@@ -97,7 +96,6 @@ def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath,
     vectors = np.load(preprocessed_vectors_file)
     preprocessed_vectors_file.close()
 
-    embedder = embed.SifEmbedder(words, vectors)
     user_collection = []
     media_collection = []
 
@@ -147,11 +145,6 @@ def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath,
             # "text_prologue": text[0:relevant_text_range[0]],
             # "text_epilogue": text[relevant_text_range[1]:],
             "text_body": text_body,
-            "avg_chars_per_word": avg_chars_per_word(text_body),
-            "avg_words_per_sentence": avg_words_per_sentence(text_body),
-            "num_of_chars": num_of_chars(text_body),
-            "num_of_punctutations": num_of_punctutations(text_body),
-            "embedding": embedder.embed(text_body),
             # "user_mentions": np.array(list({d['id'] for d in user_mentions}),
             #                           dtype = np.int64),
             # "media": len(list({d['id'] for d in media})),
@@ -205,7 +198,7 @@ def process_user_data(raw_user_filepath, processed_user_filepath):
 
 
 def main():
-    args = get_arguments()
+    args = parse_arguments()
 
     process_tweet_data(args.raw_tweet_filepath,
                        args.processed_tweet_filepath,
