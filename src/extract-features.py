@@ -89,7 +89,7 @@ def compute_word_weights(tweet_text_body_tokens, a = 10e-3):
     word_weight_mapping = reduce(with_progress(update_counter, n, prefix = "Weighing "),
                                  tweet_text_body_tokens,
                                  Counter())
-    unique_word_count = len(word_weight_mapping.keys())
+    unique_word_count = sum(word_weight_mapping.values())
     for key, value in word_weight_mapping.items():
         frequency = value / unique_word_count
         word_weight_mapping[key] = a / (a + frequency)
