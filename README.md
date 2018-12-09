@@ -4,11 +4,28 @@ A MS/PhD Machine learning course project for Northeastern University.
 This project explores author attribution problem with small texts (tweets).
 
 ### Dependencies
+- `make`
 - `wget`
 - `python3`
 - `pip3`
 
 ## Administration
+
+### The whole pipeline
+
+To run the whole pipeline, execute the following commands:
+
+```shell
+make install-dependencies
+make download-raw-data
+make download-word-vector-data
+make preprocess-raw-data
+make preprocess-word-vector-data
+make extract-features
+make train-model-sequence
+```
+Individually, these commands are explained below.
+
 
 ### Install Python dependencies
 
