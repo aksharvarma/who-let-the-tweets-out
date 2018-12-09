@@ -1,15 +1,12 @@
 import numpy as np
-import pandas as pd
 import datetime
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 
 class Evaluator(object):
-    def __init__(self):
-        self._accuracy_scores = []
-        self._precision_scores = []
-        self._recall_scores = []
-        self._f1_scores = []
-        self._training_times = []
+    def __init__(self, n_splits = 5):
+        self._scores = np.zeros((n_splits, 5), dtype=np.float64)
+        self._n_splits = n_splits
+        self._split_index = 0
 
     # def __repr__():
     #     template = "\n".join([
@@ -28,58 +25,41 @@ class Evaluator(object):
 
         # return template.format()
 
-    def _update_accuracy_score(self, Y_true, Y_pred, normalize):
-        self._accuracy_scores.append(accuracy_score(Y_true,
-                                                    Y_pred,
-                                                    normalize = normalize))
-        print("ACCURACY:  ", self._accuracy_scores[-1])
-
-
-    def _update_precision_score(self, Y_true, Y_pred, average):
-        self._precision_scores.append(precision_score(Y_true,
-                                                      Y_pred,
-                                                      average = average))
-        print("PRECISION: ", self._precision_scores[-1])
-
-
-    def _update_recall_score(self, Y_true, Y_pred, average):
-        self._recall_scores.append(recall_score(Y_true,
-                                                Y_pred,
-                                                average = average))
-        print("RECALL:    ", self._recall_scores[-1])
-
-
-    def _update_f1_score(self, Y_true, Y_pred, average):
-        self._f1_scores.append(f1_score(Y_true,
-                                        Y_pred,
-                                        average = average))
-        print("F1:        ", self._f1_scores[-1])
-
-
     def begin(self):
-        self._training_times = []
         self._previous_time = self._begin_time = datetime.datetime.now()
 
     def finish(self):
         self._finish_time = datetime.datetime.now()
 
-        self._accuracy_mean = np.mean(self._accuracy_scores)
-        self._precision_mean = np.mean(self._precision_scores)
-        self._recall_mean = np.mean(self._recall_scores)
-        self._f1_mean = np.mean(self._f1_scores)
-
-        self._accuracy_std = np.std(self._accuracy_scores)
-        self._precision_std = np.std(self._precision_scores)
-        self._recall_std = np.std(self._recall_scores)
-        self._f1_std = np.std(self._f1_scores)
-
-
     def evaluate(self, Y_true, Y_pred, average = "weighted", normalize = True):
         current_time = datetime.datetime.now()
-        self._training_times.append(current_time - self._previous_time)
-        print("TIME:      ", self._training_times[-1])
+        training_time = current_time - self._previous_time
         self._previous_time = current_time
-        self._update_accuracy_score(Y_true, Y_pred, normalize)
-        self._update_precision_score(Y_true, Y_pred, "weighted")
-        self._update_recall_score(Y_true, Y_pred, "weighted")
-        self._update_f1_score(Y_true, Y_pred, "weighted")
+        self._scores[self._split_index, 0] = accuracy_score(Y_true,
+                                                            Y_pred,
+                                                            normalize = normalize)
+        self._scores[self._split_index, 1] = precision_score(Y_true,
+                                                             Y_pred,
+                                                             average = "weighted")
+        self._scores[self._split_index, 2] = recall_score(Y_true,
+                                                          Y_pred,
+                                                          average = "weighted")
+        self._scores[self._split_index, 3] = f1_score(Y_true,
+                                                      Y_pred,
+                                                      average = "weighted")
+        self._scores[self._split_index, 4] = training_time
+
+        self._split_index += 1
+        print(self._scores[-1,:])
+
+    def save(self, raw_score_filename, aggregated_score_filename):
+        np.save(raw_score_filename, self._scores)
+        aggregated_score = np.array([
+            np.mean(self._scores, axis = 0),
+            np.std(self._scores, axis = 0)
+        ])
+        np.save(aggregated_score_filename,
+                aggregated_score)
+        print(aggregated_score)
+
+

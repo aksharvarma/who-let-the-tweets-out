@@ -71,10 +71,14 @@ def parse_arguments():
                         metavar = "model-filepath",
                         type = str,
                         help = "file containing the trained model")
-    parser.add_argument("model_evaluation_filepath",
-                        metavar = "model-evaluation-filepath",
+    parser.add_argument("raw_model_score_filepath",
+                        metavar = "raw-model-score-filepath",
                         type = str,
-                        help = "file containing model evaluation")
+                        help = "file containing raw model score")
+    parser.add_argument("aggregated_model_score_filepath",
+                        metavar = "aggregated-model-score-filepath",
+                        type = str,
+                        help = "file containing aggregated model score")
 
     return parser.parse_args()
 
@@ -92,11 +96,12 @@ def main():
     Y = np.load(args.y_filepath)
 
     train_model(model, X, Y,
-                Evaluator(),
+                Evaluator(args.n_splits),
                 args.n_splits,
                 args.random_state)
 
-#    evaluator.save(args.model_evaluation_filepath)
+    evaluator.save(args.raw_model_score_filepath,
+                   args.aggregated_model_score_filepath)
 
     joblib.dump(model, args.model_filepath)
 
