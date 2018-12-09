@@ -1,6 +1,8 @@
 from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.externals import joblib
 import numpy as np
@@ -95,8 +97,10 @@ def main():
 
     Y = np.load(args.y_filepath)
 
+    evaluator = Evaluator(args.n_splits)
+
     train_model(model, X, Y,
-                Evaluator(args.n_splits),
+                evaluator,
                 args.n_splits,
                 args.random_state)
 

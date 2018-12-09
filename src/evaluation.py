@@ -4,7 +4,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 class Evaluator(object):
     def __init__(self, n_splits = 5):
-        self._scores = np.zeros((n_splits, 5), dtype=np.float64)
+        self._scores = np.zeros((n_splits, 4), dtype=np.float64)
         self._n_splits = n_splits
         self._split_index = 0
 
@@ -47,10 +47,10 @@ class Evaluator(object):
         self._scores[self._split_index, 3] = f1_score(Y_true,
                                                       Y_pred,
                                                       average = "weighted")
-        self._scores[self._split_index, 4] = training_time
+        print(training_time)
 
+        print(self._scores[self._split_index,:])
         self._split_index += 1
-        print(self._scores[-1,:])
 
     def save(self, raw_score_filename, aggregated_score_filename):
         np.save(raw_score_filename, self._scores)
