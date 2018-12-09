@@ -26,7 +26,7 @@ MODEL_NAME_PARAMETER_MAPPING = [
 
 for model_name, model_parameters in MODEL_NAME_PARAMETER_MAPPING:
     for x_filepath in X_FILEPATHS:
-        call(["ipython3",
+        call(["python3",
               "src/train-model.py",
               "data/features/" + x_filepath,
               "data/features/Y.npy",
