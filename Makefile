@@ -60,8 +60,6 @@ preprocess-raw-data:
                            $(RAW_USERS_FILEPATH) \
                            $(PREPROCESSED_TWEETS_FILEPATH) \
                            $(PREPROCESSED_USERS_FILEPATH) \
-                           $(PREPROCESSED_WORDS_FILEPATH) \
-                           $(PREPROCESSED_VECTORS_FILEPATH) \
                            $(MIN_TWEET_COUNT)
 
 # Download and unzip word vector data

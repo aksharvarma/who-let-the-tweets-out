@@ -28,14 +28,6 @@ def parse_arguments():
                         metavar = 'processed-user-filepath',
                         type = str,
                         help = "pickle file containing processed user information")
-    parser.add_argument('processed_words_filepath',
-                        metavar = 'processed-words-filepath',
-                        type = str,
-                        help = "pickle file containing processed words information")
-    parser.add_argument('processed_vectors_filepath',
-                        metavar = 'processed-vectors-filepath',
-                        type = str,
-                        help = "numpy file containing processed word vectors")
     parser.add_argument('min_tweet_count',
                         metavar = 'min-tweet-count',
                         type = int,
@@ -84,17 +76,8 @@ def prune_inactive_users(tweets, min_tweet_count=500):
 
 
 def process_tweet_data(raw_tweet_filepath, processed_tweet_filepath,
-                       preprocessed_words_filepath, preprocessed_vectors_filepath,
                        min_tweet_count=None):
     print("Preprocessing tweets...")
-
-    preprocessed_words_file = open(preprocessed_words_filepath, "rb")
-    words = pickle.load(preprocessed_words_file)
-    preprocessed_words_file.close()
-
-    preprocessed_vectors_file = open(preprocessed_vectors_filepath, "rb")
-    vectors = np.load(preprocessed_vectors_file)
-    preprocessed_vectors_file.close()
 
     user_collection = []
     media_collection = []
@@ -202,8 +185,6 @@ def main():
 
     process_tweet_data(args.raw_tweet_filepath,
                        args.processed_tweet_filepath,
-                       args.processed_words_filepath,
-                       args.processed_vectors_filepath,
                        min_tweet_count=args.min_tweet_count)
 
     process_user_data(args.raw_user_filepath,
