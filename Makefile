@@ -36,9 +36,20 @@ X_SIF_WIH_PC_FILEPATH := $(FEATURE_DIRPATH)/X-SIF-with-PC.npy
 X_SIF_WITHOUT_PC_FILEPATH := $(FEATURE_DIRPATH)/X-SIF-without-PC.npy
 X_LINGUISTIC_FEATURE_FILEPATH := $(FEATURE_DIRPATH)/X-linguistic-feature.npy
 
-MODEL_DIRPATH := models
-
 MIN_TWEET_COUNT := 500
+
+MODEL_DIRPATH := models
+MODEL_EVALUATION_DIRPATH := model-evaluation
+X_FILEPATH := $(X_BIGRAM_FILEPATH)
+N_SPLITS := 5
+RANDOM_STATE := 55861
+MODEL_NAME := RandomForestClassifier
+MODEL_PARAMETERS := "{'verbose': 1, 'n_jobs': -1}"
+MODEL_FILEPATH := $(MODEL_DIRPATH)/$(MODEL_NAME).pkl
+RAW_MODEL_SCORE_FILEPATH := $(MODEL_SCORE_DIRPATH)/$(MODEL_NAME)-raw.npy
+AGGREGATED_MODEL_SCORE_FILEPATH := $(MODEL_SCORE_DIRPATH)/$(MODEL_NAME)-aggregated.npy
+
+LOG_DIRPATH := logs
 ################################################################################
 # RULES
 ################################################################################
@@ -100,6 +111,24 @@ train-baseline-model:
                            $(MODEL_DIRPATH)/$(MODEL_CHOICE).scores
 
 train-model:
-	@echo "Train Model. Not implemented yet."
+	@mkdir -p $(MODEL_DIRPATH)
+	@mkdir -p $(MODEL_EVALUATION_DIRPATH)
+	@$(PYTHON_BINPATH) src/train-model.py \
+                           $(X_FILEPATH) \
+													 $(Y_FILEPATH) \
+                           $(N_SPLITS) \
+                           $(RANDOM_STATE) \
+                           $(MODEL_NAME) \
+	                         $(MODEL_PARAMETERS) \
+                           $(MODEL_FILEPATH) \
+		                       $(RAW_MODEL_SCORE_FILEPATH) \
+                           $(AGGREGATED_MODEL_SCORE_FILEPATH)
 
-.PHONY: install-dependencies download-raw-data preprocess-raw-data download-word-vector-data preprocess-word-vector-data train-baseline-model extract-features
+train-model-sequence:
+	@mkdir -p $(MODEL_DIRPATH)
+	@mkdir -p $(MODEL_EVALUATION_DIRPATH)
+	@$(PYTHON_BINPATH) src/train-model-sequence.py
+
+
+.PHONY: install-dependencies download-raw-data preprocess-raw-data download-word-vector-data preprocess-word-vector-data extract-features train-baseline-model train-model train-model-sequence
+
