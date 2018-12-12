@@ -21,6 +21,9 @@ RAW_USERS_FILEPATH := $(RAW_DATA_DIRPATH)/users.json
 PREPROCESSED_DATA_DIRPATH := $(DATA_DIRPATH)/preprocessed
 PREPROCESSED_TWEETS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/tweets.pkl
 PREPROCESSED_USERS_FILEPATH := $(PREPROCESSED_DATA_DIRPATH)/users.pkl
+MIN_TWEET_COUNT := 500
+MAX_TWEET_COUNT := 1000000
+MAX_AUTHOR_COUNT := 10
 
 GLOVE_DATASET_NAME := glove.840B.300d
 WORD_VECTOR_DATA_URL := http://nlp.stanford.edu/data/$(GLOVE_DATASET_NAME).zip
@@ -37,7 +40,6 @@ X_SIF_WIH_PC_FILEPATH := $(FEATURE_DIRPATH)/X-SIF-with-PC.npy
 X_SIF_WITHOUT_PC_FILEPATH := $(FEATURE_DIRPATH)/X-SIF-without-PC.npy
 X_LINGUISTIC_FEATURE_FILEPATH := $(FEATURE_DIRPATH)/X-linguistic-feature.npy
 
-MIN_TWEET_COUNT := 500
 
 MODEL_DIRPATH := $(DATA_DIRPATH)/models
 X_FILEPATH := $(X_BIGRAM_FILEPATH)
@@ -71,7 +73,9 @@ preprocess-raw-data:
                            $(RAW_USERS_FILEPATH) \
                            $(PREPROCESSED_TWEETS_FILEPATH) \
                            $(PREPROCESSED_USERS_FILEPATH) \
-                           $(MIN_TWEET_COUNT)
+                           $(MIN_TWEET_COUNT) \
+                           $(MAX_TWEET_COUNT) \
+                           $(MAX_AUTHOR_COUNT)
 
 # Download and unzip word vector data
 download-word-vector-data:

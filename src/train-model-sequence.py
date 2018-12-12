@@ -95,7 +95,7 @@ def main():
         ("KNN-chebyshev", "KNeighborsClassifier", {'metric': 'chebyshev'}),
         ("KNN-canberra", "KNeighborsClassifier", {'metric': 'canberra'}),
         ("KNN-braycurtis", "KNeighborsClassifier", {'metric': 'braycurtis'}),
-        ("NN", "MLPClassifier", {'hidden_layer_sizes': (100,)})
+        ("NN", "MLPClassifier", {'hidden_layer_sizes': (100,), "max_iter": 1000})
     ]
 
     train_model_sequence(model_name_class_parameter_mapping,
