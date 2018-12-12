@@ -31,6 +31,10 @@ class Evaluator(object):
     def finish(self):
         self._finish_time = datetime.datetime.now()
 
+    def format_score(self, scores):
+        return " ".join(map(lambda score: "{0:.2f}".format(round(score,2)),
+                            scores))
+
     def evaluate(self, Y_true, Y_pred, average = "weighted", normalize = True):
         current_time = datetime.datetime.now()
         training_time = current_time - self._previous_time
@@ -47,9 +51,9 @@ class Evaluator(object):
         self._scores[self._split_index, 3] = f1_score(Y_true,
                                                       Y_pred,
                                                       average = "weighted")
-        print(training_time)
 
-        print(self._scores[self._split_index,:])
+        print(self.format_score(self._scores[self._split_index,:]), end = " ")
+        print(training_time.total_seconds(), end = " Seconds\n")
         self._split_index += 1
 
     def save(self, raw_score_filename, aggregated_score_filename):
@@ -67,6 +71,5 @@ class Evaluator(object):
                    comments = "",
                    delimiter = ",",
                    header = "Accuracy, Precision, Recall, F1")
-        print(aggregated_score)
-
-
+        print(self.format_score(aggregated_score[0]), end = " \n")
+        print(self.format_score(aggregated_score[1]), end = " \n")

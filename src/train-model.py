@@ -84,6 +84,7 @@ def parse_arguments():
 def main():
     args = parse_arguments()
 
+    print("#" * 80)
     print("Model:                         ", args.model_class)
     print("Parameters:                    ", args.model_parameters)
     print("X:                             ", args.x_filepath)
@@ -113,6 +114,7 @@ def main():
 
     joblib.dump(model, args.model_filepath)
 
+    print("#" * 80)
 
 if __name__ =="__main__":
     main()
