@@ -53,13 +53,20 @@ class Evaluator(object):
         self._split_index += 1
 
     def save(self, raw_score_filename, aggregated_score_filename):
-        np.save(raw_score_filename, self._scores)
+        np.savetxt(raw_score_filename,
+                   self._scores,
+                   comments = "",
+                   delimiter = ",",
+                   header = "Accuracy, Precision, Recall, F1")
         aggregated_score = np.array([
             np.mean(self._scores, axis = 0),
             np.std(self._scores, axis = 0)
         ])
-        np.save(aggregated_score_filename,
-                aggregated_score)
+        np.savetxt(aggregated_score_filename,
+                   aggregated_score,
+                   comments = "",
+                   delimiter = ",",
+                   header = "Accuracy, Precision, Recall, F1")
         print(aggregated_score)
 
 

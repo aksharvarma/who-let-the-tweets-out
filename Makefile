@@ -39,16 +39,15 @@ X_LINGUISTIC_FEATURE_FILEPATH := $(FEATURE_DIRPATH)/X-linguistic-feature.npy
 
 MIN_TWEET_COUNT := 500
 
-MODEL_DIRPATH := models
-MODEL_EVALUATION_DIRPATH := model-evaluation
+MODEL_DIRPATH := $(DATA_DIRPATH)/models
 X_FILEPATH := $(X_BIGRAM_FILEPATH)
 N_SPLITS := 5
 RANDOM_STATE := 55861
 MODEL_NAME := RandomForestClassifier
 MODEL_PARAMETERS := "{'verbose': 1, 'n_jobs': -1}"
 MODEL_FILEPATH := $(MODEL_DIRPATH)/$(MODEL_NAME).pkl
-RAW_MODEL_SCORE_FILEPATH := $(MODEL_SCORE_DIRPATH)/$(MODEL_NAME)-raw.npy
-AGGREGATED_MODEL_SCORE_FILEPATH := $(MODEL_SCORE_DIRPATH)/$(MODEL_NAME)-aggregated.npy
+RAW_MODEL_SCORE_FILEPATH := $(MODEL_DIRPATH)/$(MODEL_NAME)-evaluation-raw.txt
+AGGREGATED_MODEL_SCORE_FILEPATH := $(MODEL_DIRPATH)/$(MODEL_NAME)-evaluation-aggregated.txt
 
 LOG_DIRPATH := logs
 ################################################################################
@@ -113,7 +112,6 @@ train-baseline-model:
 
 train-model:
 	@mkdir -p $(MODEL_DIRPATH)
-	@mkdir -p $(MODEL_EVALUATION_DIRPATH)
 	@$(PYTHON_BINPATH) src/train-model.py \
                            $(X_FILEPATH) \
 													 $(Y_FILEPATH) \
@@ -126,10 +124,13 @@ train-model:
                            $(AGGREGATED_MODEL_SCORE_FILEPATH)
 
 train-model-sequence:
-	@mkdir -p $(MODEL_DIRPATH)
-	@mkdir -p $(MODEL_EVALUATION_DIRPATH)
-	@$(PYTHON_BINPATH) src/train-model-sequence.py
+	@$(PYTHON_BINPATH) src/train-model-sequence.py \
+                     $(PYTHON_BINPATH) \
+                     $(FEATURE_DIRPATH) \
+                     $(Y_FILEPATH) \
+                     $(N_SPLITS) \
+                     $(RANDOM_STATE) \
+                     $(MODEL_DIRPATH)
 
 
 .PHONY: install-dependencies download-raw-data preprocess-raw-data download-word-vector-data preprocess-word-vector-data extract-features train-baseline-model train-model train-model-sequence
-

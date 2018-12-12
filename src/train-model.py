@@ -3,6 +3,10 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.externals import joblib
 import numpy as np
@@ -10,17 +14,9 @@ import argparse
 from evaluation import Evaluator
 
 
-def initialize_model(model_name, model_parameters):
-    # model_name = args.model_name
-    # model_arguments = vars(args)
-    # map(model_arguments.pop, ["x_filepath",
-    #                           "y_filepath",
-    #                           "n_splits",
-    #                           "random_state",
-    #                           "model_filepath",
-    #                           "model_evaluation_filepath"])
+def initialize_model(model_class, model_parameters):
     parameters = eval(model_parameters)
-    return eval(model_name + "(**parameters)")
+    return eval(model_class + "(**parameters)")
 
 
 def train_model(model, X, Y, evaluator,
@@ -61,10 +57,10 @@ def parse_arguments():
                         metavar = 'random-state',
                         type = int,
                         help = "random state for cross validation shuffling")
-    parser.add_argument("model_name",
-                        metavar = "model-name",
+    parser.add_argument("model_class",
+                        metavar = "model-class",
                         type = str,
-                        help = "name of the model sklearn model class")
+                        help = "name of the sklearn model class")
     parser.add_argument("model_parameters",
                         metavar = "model-parameters",
                         type = str,
@@ -88,9 +84,17 @@ def parse_arguments():
 def main():
     args = parse_arguments()
 
-    print(args)
+    print("Model:                         ", args.model_class)
+    print("Parameters:                    ", args.model_parameters)
+    print("X:                             ", args.x_filepath)
+    print("Y:                             ", args.y_filepath)
+    print("Splits:                        ", args.n_splits)
+    print("Random State:                  ", args.random_state)
+    print("Model Filepath:                ", args.model_filepath)
+    print("Raw Evaluation Filepath:       ", args.raw_model_score_filepath)
+    print("Aggregate Evaluation Filepath: ", args.aggregated_model_score_filepath)
 
-    model = initialize_model(args.model_name,
+    model = initialize_model(args.model_class,
                              args.model_parameters)
 
     X = np.load(args.x_filepath)
