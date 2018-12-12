@@ -4,7 +4,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 class Evaluator(object):
     def __init__(self, n_splits = 5):
-        self._scores = np.zeros((n_splits, 4), dtype=np.float64)
+        self._scores = np.zeros((n_splits, 5), dtype=np.float64)
         self._n_splits = n_splits
         self._split_index = 0
 
@@ -52,8 +52,10 @@ class Evaluator(object):
                                                       Y_pred,
                                                       average = "weighted")
 
-        print(self.format_score(self._scores[self._split_index,:]), end = " ")
-        print(training_time.total_seconds(), end = " Seconds\n")
+        self._scores[self._split_index, 4] = training_time.total_seconds()
+
+        print(self.format_score(self._scores[self._split_index,:]), end = " Seconds\n")
+
         self._split_index += 1
 
     def save(self, raw_score_filename, aggregated_score_filename):
@@ -61,7 +63,7 @@ class Evaluator(object):
                    self._scores,
                    comments = "",
                    delimiter = ",",
-                   header = "Accuracy, Precision, Recall, F1")
+                   header = "Accuracy, Precision, Recall, F1, Time")
         aggregated_score = np.array([
             np.mean(self._scores, axis = 0),
             np.std(self._scores, axis = 0)
@@ -70,6 +72,6 @@ class Evaluator(object):
                    aggregated_score,
                    comments = "",
                    delimiter = ",",
-                   header = "Accuracy, Precision, Recall, F1")
+                   header = "Accuracy, Precision, Recall, F1, Time")
         print(self.format_score(aggregated_score[0]), end = " \n")
         print(self.format_score(aggregated_score[1]), end = " \n")
