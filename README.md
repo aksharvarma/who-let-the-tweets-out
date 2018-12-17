@@ -1,7 +1,6 @@
 # Who Let the Tweets Out!
 
-A MS/PhD Machine learning course project for Northeastern University.
-This project explores author attribution problem with small texts (tweets).
+A Machine learning project for Northeastern University's graduate level course [CS 6140](https://sites.google.com/view/cs6140fall2018/home "CS 6140"). This project explores author attribution problem with small texts (tweets).
 
 ### Dependencies
 - `make`
@@ -23,6 +22,7 @@ make preprocess-raw-data
 make preprocess-word-vector-data
 make extract-features
 make train-model-sequence
+make tabulate-model-performance
 ```
 Individually, these commands are explained below.
 
@@ -83,20 +83,8 @@ Execute the following command:
 $ make train-model-sequence
 ```
 
-## Tasks
+## Tabulate model performance
 
-### Logistics
-- [X] Create dependency list
-- [X] Understand SIF and add its [implementation](https://github.com/PrincetonML/SIF "SIF").
- 
-### Data
-- [X] Automate download and extraction of raw data
-- [X] Preprocess raw data as Pandas dataframe
-- [X] Create testing and validation sets
-
-### Modeling
-- [X] Feature engineering (feature distribution)
-- [X] Bag of words representation of tweets
-- [X] Classification accuracy with bag of words
-- [X] Arora embedding of tweets
-- [X] Classification accuracy with arora embedding
+```shell
+$ make tabulate-model-peformance
+```

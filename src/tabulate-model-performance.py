@@ -86,6 +86,3 @@ if __name__ == "__main__":
                              "X-SIF-with-PC",
                              "X-SIF-without-PC"])
     print(df.to_latex())
-    # f = open(sys.argv[2], "w")
-    # f.write(df.to_latex())
-    # f.close()

@@ -136,5 +136,8 @@ train-model-sequence:
                      $(RANDOM_STATE) \
                      $(MODEL_DIRPATH)
 
+tabulate-model-performance:
+	@$(PYTHON_BINPATH) src/tabulate-model-performance.py \
+                     $(MODEL_DIRPATH)
 
-.PHONY: install-dependencies download-raw-data preprocess-raw-data download-word-vector-data preprocess-word-vector-data extract-features train-baseline-model train-model train-model-sequence
+.PHONY: install-dependencies download-raw-data preprocess-raw-data download-word-vector-data preprocess-word-vector-data extract-features train-baseline-model train-model train-model-sequence tabulate-model-peformance
